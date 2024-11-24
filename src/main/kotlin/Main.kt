@@ -5,7 +5,7 @@ import java.io.File
 data class Word(
     val originalWord: String,
     val translatedWord: String,
-    val correctAnswersCount: Int?
+    val correctAnswersCount: Int = 0
 )
 
 fun main() {
@@ -20,7 +20,7 @@ fun main() {
             Word(
                 originalWord = splitLine[0],
                 translatedWord = splitLine[1],
-                correctAnswersCount = splitLine[2].toIntOrNull() ?: 0
+                correctAnswersCount = splitLine.getOrNull(2)?.toIntOrNull() ?: 0
             )
         )
     }
