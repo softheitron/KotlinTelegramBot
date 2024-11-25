@@ -10,6 +10,30 @@ data class Word(
 
 fun main() {
 
+    val dictionary = loadDictionary()
+
+    while (true) {
+
+        print(
+            "1 - Учить слова\n" +
+            "2 - Статистика\n" +
+            "0 - Выход\n" +
+            "Ввод: "
+        )
+
+        val choseInput = readln()
+        when(choseInput) {
+            "1" -> println("Вы выбрали учить слова")
+            "2" -> println("Вы выбрали просмотр статистики")
+            "0" -> return
+            else -> println("Неверный выбор. Введите число 1, 2 или 0")
+        }
+
+    }
+
+}
+
+fun loadDictionary() : List<Word> {
     val wordsFile = File("words.txt")
     val dictionary = mutableListOf<Word>()
     val fileLines = wordsFile.readLines()
@@ -25,8 +49,5 @@ fun main() {
         )
     }
 
-    dictionary.forEach {
-        println("${it.originalWord} - ${it.translatedWord}|count: ${it.correctAnswersCount}")
-    }
-
+    return dictionary
 }
