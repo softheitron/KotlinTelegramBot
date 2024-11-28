@@ -2,6 +2,7 @@ package org.example
 import java.io.File
 
 const val PERCENTAGE_HUNDRED = 100
+const val MAX_CORRECT_ANSWERS = 3
 
 data class Word(
     val originalWord: String,
@@ -24,10 +25,28 @@ fun main() {
 
         val choseInput = readln()
         when(choseInput) {
-            "1" -> println("Вы выбрали учить слова")
+            "1" -> {
+                val notLearnedWords = dictionary.filter { it.correctAnswersCount < MAX_CORRECT_ANSWERS }
+                if (notLearnedWords.isNotEmpty()){
+                    while(true) {
+                        val questionWords = notLearnedWords.shuffled().take(4)
+                        val correctAnswer = questionWords.random()
+                        println("${correctAnswer.originalWord}:")
+                        questionWords.forEachIndexed { index, word ->
+                            println("${index + 1} - ${word.translatedWord}")
+                        }
+                        print("Ввод: ")
+                        val guessInput = readln().toIntOrNull()
+                    }
+                } else {
+                    println("\nВсе слова выучены\n")
+                    continue
+                }
+
+            }
             "2" -> {
                 val wordsAmount = dictionary.size
-                val learnedWords = dictionary.filter { it.correctAnswersCount >= 3 }.size
+                val learnedWords = dictionary.filter { it.correctAnswersCount >= MAX_CORRECT_ANSWERS }.size
                 val learnedPercent = (learnedWords.toDouble() / wordsAmount * PERCENTAGE_HUNDRED).toInt()
                 println(
                     "Общее количество слов в словаре | $wordsAmount\n" +
