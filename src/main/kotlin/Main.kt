@@ -31,7 +31,7 @@ fun main() {
                     while(true) {
                         val questionWords = notLearnedWords.shuffled().take(4)
                         val correctAnswer = questionWords.random()
-                        println("${correctAnswer.originalWord}:")
+                        println("\n${correctAnswer.originalWord}:")
                         questionWords.forEachIndexed { index, word ->
                             println("${index + 1} - ${word.translatedWord}")
                         }
