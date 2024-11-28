@@ -12,8 +12,6 @@ data class Word(
 fun main() {
 
     val dictionary = loadDictionary()
-    var learnedWords: Int
-    var learnedPercent: Int
 
     while (true) {
 
@@ -28,11 +26,12 @@ fun main() {
         when(choseInput) {
             "1" -> println("Вы выбрали учить слова")
             "2" -> {
-                learnedWords = dictionary.filter { it.correctAnswersCount >= 3 }.size
-                learnedPercent = (learnedWords.toDouble() / dictionary.size * PERCENTAGE_HUNDRED).toInt()
+                val wordsAmount = dictionary.size
+                val learnedWords = dictionary.filter { it.correctAnswersCount >= 3 }.size
+                val learnedPercent = (learnedWords.toDouble() / wordsAmount * PERCENTAGE_HUNDRED).toInt()
                 println(
-                    "Общее количество слов в словаре | ${dictionary.size}\n" +
-                    "Выучено $learnedWords из ${dictionary.size} слов | $learnedPercent%\n"
+                    "Общее количество слов в словаре | $wordsAmount\n" +
+                    "Выучено $learnedWords из $wordsAmount слов | $learnedPercent%\n"
                 )
             }
             "0" -> return
