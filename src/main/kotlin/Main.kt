@@ -4,6 +4,7 @@ import java.io.File
 
 const val PERCENTAGE_HUNDRED = 100
 const val MAX_CORRECT_ANSWERS = 3
+const val QUESTION_WORDS_AMOUNT = 4
 
 data class Word(
     val originalWord: String,
@@ -30,7 +31,7 @@ fun main() {
                 while (true) {
                     val notLearnedWords = dictionary.filter { it.correctAnswersCount < MAX_CORRECT_ANSWERS }
                     if (notLearnedWords.isNotEmpty()) {
-                        val questionWords = notLearnedWords.take(4).shuffled()
+                        val questionWords = notLearnedWords.shuffled().take(QUESTION_WORDS_AMOUNT)
                         val correctAnswer = questionWords.random()
                         println("\n${correctAnswer.originalWord}:")
                         questionWords.forEachIndexed { index, word ->
@@ -39,13 +40,12 @@ fun main() {
                         println("----------\n0 - В меню")
                         print("Ввод: ")
                         val guessInput = readln().toIntOrNull()
-                        if (guessInput != null && guessInput <= 4) {
+                        if (guessInput != null && guessInput <= QUESTION_WORDS_AMOUNT) {
                             val correctAnswerIndex = questionWords.indexOf(correctAnswer)
                             when (guessInput) {
                                 (correctAnswerIndex + 1) -> {
                                     println("\nПравильно!")
-                                    val correctWordIndex = dictionary.indexOf(correctAnswer)
-                                    dictionary[correctWordIndex].correctAnswersCount++
+                                    correctAnswer.correctAnswersCount++
                                     saveDictionary(dictionary)
                                 }
                                 0 -> { println(); break }
