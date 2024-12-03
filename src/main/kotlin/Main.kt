@@ -1,7 +1,5 @@
 package org.example
 
-import java.io.File
-
 const val PERCENTAGE_HUNDRED = 100
 const val MAX_CORRECT_ANSWERS = 3
 const val QUESTION_WORDS_AMOUNT = 4
@@ -12,9 +10,17 @@ data class Word(
     var correctAnswersCount: Int = 0
 )
 
+fun Question.asConsoleString(): String {
+    val variants = this.variants
+        .mapIndexed { index, word -> "${index + 1} - ${word.translatedWord}\n" }
+        .joinToString("")
+    return "\n" + this.correctAnswer.originalWord + "\n" + variants + "0 - В меню"
+}
+
+
 fun main() {
 
-    val dictionary = loadDictionary()
+    val trainer = LearnWordsTrainer()
 
     while (true) {
 
@@ -29,43 +35,31 @@ fun main() {
         when (choseInput) {
             "1" -> {
                 while (true) {
-                    val notLearnedWords = dictionary.filter { it.correctAnswersCount < MAX_CORRECT_ANSWERS }
-                    if (notLearnedWords.isNotEmpty()) {
-                        val questionWords = notLearnedWords.shuffled().take(QUESTION_WORDS_AMOUNT)
-                        val correctAnswer = questionWords.random()
-                        println("\n${correctAnswer.originalWord}:")
-                        questionWords.forEachIndexed { index, word ->
-                            println("${index + 1} - ${word.translatedWord}")
-                        }
-                        println("----------\n0 - В меню")
+                    val question = trainer.getNextQuestion()
+                    if (question != null) {
+                        println(question.asConsoleString())
                         print("Ввод: ")
                         val guessInput = readln().toIntOrNull()
+                        if (guessInput == 0) break
                         if (guessInput != null && guessInput <= QUESTION_WORDS_AMOUNT) {
-                            val correctAnswerIndex = questionWords.indexOf(correctAnswer)
-                            when (guessInput) {
-                                (correctAnswerIndex + 1) -> {
-                                    println("\nПравильно!")
-                                    correctAnswer.correctAnswersCount++
-                                    saveDictionary(dictionary)
-                                }
-                                0 -> { println(); break }
-                                else -> println("Неправильно! ${correctAnswer.originalWord} - это ${correctAnswer.translatedWord}")
+                            if (trainer.checkAnswer(guessInput.minus(1))) {
+                                println("\nПравильно!")
+                            } else {
+                                println("\nНеправильно! ${question.correctAnswer.originalWord} - это ${question.correctAnswer.translatedWord}")
                             }
-                        } else println("Некорректный ввод!")
+                        } else println("\nНекорректный ввод!")
                     } else {
-                        println("\nВсе слова выучены!\n")
+                        println("\nВсе слова выучены!")
                         break
                     }
                 }
             }
 
             "2" -> {
-                val wordsAmount = dictionary.size
-                val learnedWords = dictionary.filter { it.correctAnswersCount >= MAX_CORRECT_ANSWERS }.size
-                val learnedPercent = (learnedWords.toDouble() / wordsAmount * PERCENTAGE_HUNDRED).toInt()
+                val statistics = trainer.getStatistics()
                 println(
-                    "\nОбщее количество слов в словаре | $wordsAmount\n" +
-                            "Выучено $learnedWords из $wordsAmount слов | $learnedPercent%\n"
+                    "\nОбщее количество слов в словаре | ${statistics.wordsAmount}\n" +
+                            "Выучено ${statistics.learnedWords} из ${statistics.wordsAmount} слов | ${statistics.learnedPercent}%\n"
                 )
             }
 
@@ -75,30 +69,4 @@ fun main() {
 
     }
 
-}
-
-fun loadDictionary(): List<Word> {
-    val wordsFile = File("words.txt")
-    val dictionary = mutableListOf<Word>()
-    val fileLines = wordsFile.readLines()
-
-    fileLines.forEach { line ->
-        val splitLine = line.split("|")
-        dictionary.add(
-            Word(
-                originalWord = splitLine[0],
-                translatedWord = splitLine[1],
-                correctAnswersCount = splitLine.getOrNull(2)?.toIntOrNull() ?: 0
-            )
-        )
-    }
-    return dictionary
-}
-
-fun saveDictionary(dictionary: List<Word>) {
-    val wordsFile = File("words.txt")
-    wordsFile.writeText("")
-    dictionary.forEach {
-        wordsFile.appendText("${it.originalWord}|${it.translatedWord}|${it.correctAnswersCount}\n")
-    }
 }
