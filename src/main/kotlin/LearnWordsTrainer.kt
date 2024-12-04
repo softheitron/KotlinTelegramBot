@@ -3,9 +3,9 @@ package org.example
 import java.io.File
 
 data class Statistics(
-    val wordsAmount : Int,
-    val learnedWords : Int,
-    val learnedPercent : Int,
+    val wordsAmount: Int,
+    val learnedWords: Int,
+    val learnedPercent: Int,
 )
 
 data class Question(
@@ -38,7 +38,7 @@ class LearnWordsTrainer(private val learnedAnswerCount: Int = 3, private val cou
         }.shuffled()
 
         val correctAnswer = questionWords.random()
-        question =  Question(
+        question = Question(
             questionWords,
             correctAnswer
         )
@@ -46,7 +46,7 @@ class LearnWordsTrainer(private val learnedAnswerCount: Int = 3, private val cou
     }
 
     fun checkAnswer(userAnswerIndex: Int?): Boolean {
-        return  question?.let {
+        return question?.let {
             val correctAnswerIndex = it.variants.indexOf(it.correctAnswer)
             if (correctAnswerIndex == userAnswerIndex) {
                 it.correctAnswer.correctAnswersCount++
