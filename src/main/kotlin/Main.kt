@@ -1,8 +1,8 @@
 package org.example
 
 const val PERCENTAGE_HUNDRED = 100
-const val MAX_CORRECT_ANSWERS = 3
 const val QUESTION_WORDS_AMOUNT = 4
+const val MAX_CORRECT_ANSWERS = 3
 
 data class Word(
     val originalWord: String,
@@ -20,7 +20,12 @@ fun Question.asConsoleString(): String {
 
 fun main() {
 
-    val trainer = LearnWordsTrainer()
+    val trainer = try {
+        LearnWordsTrainer(MAX_CORRECT_ANSWERS, QUESTION_WORDS_AMOUNT)
+    } catch (e: Exception) {
+        println("Невозможно загрузить словарь\nReason - $e")
+        return
+    }
 
     while (true) {
 

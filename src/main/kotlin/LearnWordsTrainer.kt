@@ -3,9 +3,9 @@ package org.example
 import java.io.File
 
 data class Statistics(
-    val wordsAmount : Int,
-    val learnedWords : Int,
-    val learnedPercent : Int,
+    val wordsAmount: Int,
+    val learnedWords: Int,
+    val learnedPercent: Int,
 )
 
 data class Question(
@@ -13,25 +13,35 @@ data class Question(
     val correctAnswer: Word,
 )
 
-class LearnWordsTrainer {
+class LearnWordsTrainer(
+    private val learnedAnswerCount: Int = MAX_CORRECT_ANSWERS,
+    private val countOfQuestionWords: Int = QUESTION_WORDS_AMOUNT
+) {
 
     private val dictionary = loadDictionary()
     private var question: Question? = null
 
     fun getStatistics(): Statistics {
         val wordsAmount = dictionary.size
-        val learnedWords = dictionary.filter { it.correctAnswersCount >= MAX_CORRECT_ANSWERS }.size
+        val learnedWords = dictionary.filter { it.correctAnswersCount >= learnedAnswerCount }.size
         val learnedPercent = learnedWords * PERCENTAGE_HUNDRED / wordsAmount
 
         return Statistics(wordsAmount, learnedWords, learnedPercent)
     }
 
     fun getNextQuestion(): Question? {
-        val notLearnedWords = dictionary.filter { it.correctAnswersCount < MAX_CORRECT_ANSWERS }
+        val notLearnedWords = dictionary.filter { it.correctAnswersCount < learnedAnswerCount }
         if (notLearnedWords.isEmpty()) return null
-        val questionWords = notLearnedWords.shuffled().take(QUESTION_WORDS_AMOUNT)
+        val questionWords = if (notLearnedWords.size < countOfQuestionWords) {
+            val learnedWords = dictionary.filter { it.correctAnswersCount >= learnedAnswerCount }.shuffled()
+            notLearnedWords.shuffled().take(countOfQuestionWords) +
+                    learnedWords.take(countOfQuestionWords - notLearnedWords.size)
+        } else {
+            notLearnedWords.shuffled().take(countOfQuestionWords)
+        }.shuffled()
+
         val correctAnswer = questionWords.random()
-        question =  Question(
+        question = Question(
             questionWords,
             correctAnswer
         )
@@ -39,7 +49,7 @@ class LearnWordsTrainer {
     }
 
     fun checkAnswer(userAnswerIndex: Int?): Boolean {
-        return  question?.let {
+        return question?.let {
             val correctAnswerIndex = it.variants.indexOf(it.correctAnswer)
             if (correctAnswerIndex == userAnswerIndex) {
                 it.correctAnswer.correctAnswersCount++
