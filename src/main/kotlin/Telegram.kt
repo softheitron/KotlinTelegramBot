@@ -9,22 +9,24 @@ fun main(args: Array<String>) {
 
     val botToken = args[0]
     var updateId = 0
+    val messageTextRegex = "\"text\":\"(.+?)\"".toRegex()
+    val idTextRegex = "\"update_id\":(\\d+)".toRegex()
 
     while (true) {
         Thread.sleep(1000)
         val updates = getUpdates(botToken, updateId)
         println(updates)
 
-        val idTextRegex = "\"update_id\":(\\d+)".toRegex()
         val idMatches = idTextRegex.findAll(updates)
         val idGroups = idMatches.lastOrNull()?.groups
         updateId = idGroups?.get(1)?.value?.toIntOrNull()?.plus(1) ?: 0
 
-        val messageTextRegex: Regex = "\"text\":\"(.+?)\"".toRegex()
+
         val matchResult = messageTextRegex.find(updates)
         val groups = matchResult?.groups
         val text = groups?.get(1)?.value ?: "No messages yet"
         println(text)
+
     }
 
 }
@@ -34,6 +36,7 @@ fun getUpdates(botToken: String, updateId: Int): String {
     val client = HttpClient.newBuilder().build()
     val getUpdatesRequest = HttpRequest.newBuilder().uri(URI.create(urlGetUpdate)).build()
     val getUpdatesResponse = client.send(getUpdatesRequest, HttpResponse.BodyHandlers.ofString())
+
 
     return getUpdatesResponse.body()
 }
