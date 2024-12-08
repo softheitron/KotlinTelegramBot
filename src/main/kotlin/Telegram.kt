@@ -19,7 +19,7 @@ fun main(args: Array<String>) {
 
         val idMatches = idTextRegex.findAll(updates)
         val idGroups = idMatches.lastOrNull()?.groups
-        updateId = idGroups?.get(1)?.value?.toIntOrNull()?.plus(1) ?: 0
+        updateId = idGroups?.get(1)?.value?.toIntOrNull()?.plus(1) ?: continue
 
 
         val matchResult = messageTextRegex.find(updates)
