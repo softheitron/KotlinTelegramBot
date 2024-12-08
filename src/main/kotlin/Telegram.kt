@@ -5,8 +5,6 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-const val INDEX_DESTINATION = 11
-
 fun main(args: Array<String>) {
 
     val botToken = args[0]
@@ -17,12 +15,16 @@ fun main(args: Array<String>) {
         val updates = getUpdates(botToken, updateId)
         println(updates)
 
-        val startUpdateId = updates.lastIndexOf("update_id")
-        val endUpdateId = updates.lastIndexOf(",\n\"message\"")
-        if (startUpdateId == -1 || endUpdateId == -1) continue
-        val updateIdString = updates.substring(startUpdateId + INDEX_DESTINATION, endUpdateId)
+        val idTextRegex = "\"update_id\":(\\d+)".toRegex()
+        val idMatches = idTextRegex.findAll(updates)
+        val idGroups = idMatches.lastOrNull()?.groups
+        updateId = idGroups?.get(1)?.value?.toIntOrNull()?.plus(1) ?: 0
 
-        updateId = updateIdString.toInt() + 1
+        val messageTextRegex: Regex = "\"text\":\"(.+?)\"".toRegex()
+        val matchResult = messageTextRegex.find(updates)
+        val groups = matchResult?.groups
+        val text = groups?.get(1)?.value ?: "No messages yet"
+        println(text)
     }
 
 }
