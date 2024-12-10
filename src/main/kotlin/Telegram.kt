@@ -38,7 +38,7 @@ fun main(args: Array<String>) {
 
         if (receivedText.equals("hello", true)) telegramBotService.sendMessage(chatId, WELCOME_MESSAGE)
         if (receivedText.equals(START_TEXT, true)) telegramBotService.sendMenu(chatId)
-        if (data.equals(STATISTICS_CLICK, true)) telegramBotService.sendMessage(chatId, "Выучено 10 из 10 слов | 100%")
+        if (data.equals(STATISTICS_CLICK, true)) telegramBotService.sendMessage(chatId, "Learned 6 of 6 | 100%")
     }
 
 }
