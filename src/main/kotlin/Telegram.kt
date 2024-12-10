@@ -1,6 +1,7 @@
 package org.example
 
 const val WELCOME_MESSAGE = "Hello!"
+const val START_TEXT = "/start"
 
 fun main(args: Array<String>) {
 
@@ -36,8 +37,8 @@ fun main(args: Array<String>) {
         val data = dataGroups?.get(1)?.value
 
         if (receivedText.equals("hello", true)) telegramBotService.sendMessage(chatId, WELCOME_MESSAGE)
-        if (receivedText.equals("/start", true)) telegramBotService.sendMenu(chatId)
-        if (data.equals("statistics_clicked", true)) telegramBotService.sendMessage(chatId, "Выучено 10 из 10 слов | 100%")
+        if (receivedText.equals(START_TEXT, true)) telegramBotService.sendMenu(chatId)
+        if (data.equals(STATISTICS_CLICK, true)) telegramBotService.sendMessage(chatId, "Выучено 10 из 10 слов | 100%")
     }
 
 }

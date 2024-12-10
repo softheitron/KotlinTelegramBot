@@ -7,6 +7,8 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.nio.charset.StandardCharsets
 
+const val STATISTICS_CLICK = "statistics_clicked"
+const val LEARN_WORDS_CLICK = "statistics_clicked"
 const val TELEGRAM_API_URL = "https://api.telegram.org/bot"
 
 class TelegramBotService(private val botToken: String) {
@@ -41,13 +43,13 @@ class TelegramBotService(private val botToken: String) {
                         [
                             {
                                 "text": "Изучить слова",
-                                "callback_data": "learn_words_clicked"
+                                "callback_data": $LEARN_WORDS_CLICK
                             }
                         ],
                         [
                             {
                                 "text": "Статистика",
-                                "callback_data": "statistics_clicked"
+                                "callback_data": $STATISTICS_CLICK
                             }
                         ]
                     ]
