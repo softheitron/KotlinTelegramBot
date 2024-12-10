@@ -7,10 +7,12 @@ fun main(args: Array<String>) {
     val botToken = args[0]
     var updateId = 0
     val telegramBotService = TelegramBotService(botToken)
+    val trainer = LearnWordsTrainer()
 
     val messageTextRegex = "\"text\":\"(.+?)\"".toRegex()
     val idTextRegex = "\"update_id\":(\\d+)".toRegex()
-    val chatIdRegex: Regex = "\"chat\":.\"id\":(\\d+),".toRegex()
+    val chatIdRegex: Regex = "\"chat\":.\"id\":(\\d+)".toRegex()
+    val dataRegex: Regex = "\"data\":\"(.+?)\"".toRegex()
 
     while (true) {
         Thread.sleep(1000)
@@ -29,7 +31,13 @@ fun main(args: Array<String>) {
         val groups = matchResult.lastOrNull()?.groups
         val receivedText = groups?.get(1)?.value ?: "No messages yet"
 
+        val dataMatches = dataRegex.find(updates)
+        val dataGroups = dataMatches?.groups
+        val data = dataGroups?.get(1)?.value
+
         if (receivedText.equals("hello", true)) telegramBotService.sendMessage(chatId, WELCOME_MESSAGE)
+        if (receivedText.equals("/start", true)) telegramBotService.sendMenu(chatId)
+        if (data.equals("statistics_clicked", true)) telegramBotService.sendMessage(chatId, "Выучено 10 из 10 слов | 100%")
     }
 
 }
