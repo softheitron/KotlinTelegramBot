@@ -22,7 +22,7 @@ class TelegramBotService(private val botToken: String) {
         return getUpdatesResponse.body()
     }
 
-    fun sendMessage(chatId: Int, message: String) {
+    fun sendMessage(chatId: Long, message: String) {
         val encoded = URLEncoder.encode(
             message,
             StandardCharsets.UTF_8
@@ -32,7 +32,7 @@ class TelegramBotService(private val botToken: String) {
         httpClient.send(sendMessageRequest, HttpResponse.BodyHandlers.ofString())
     }
 
-    fun sendMenu(chatId: Int) {
+    fun sendMenu(chatId: Long) {
         val sendMessageUrl = "$TELEGRAM_API_URL$botToken/sendMessage"
         val sendMenuBody = """
             {

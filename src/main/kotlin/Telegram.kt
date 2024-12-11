@@ -26,7 +26,7 @@ fun main(args: Array<String>) {
 
         val chatIdMatches = chatIdRegex.findAll(updates)
         val chatIdGroups = chatIdMatches.lastOrNull()?.groups
-        val chatId = chatIdGroups?.get(1)?.value?.toIntOrNull() ?: continue
+        val chatId = chatIdGroups?.get(1)?.value?.toLongOrNull() ?: continue
 
         val matchResult = messageTextRegex.findAll(updates)
         val groups = matchResult.lastOrNull()?.groups
