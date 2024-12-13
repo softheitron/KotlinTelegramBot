@@ -1,7 +1,7 @@
 package org.example
 
-const val WELCOME_MESSAGE = "Hello!"
-const val START_TEXT = "/start"
+const val START_MENU = "/start"
+const val ALL_WORDS_LEARNED_MESSAGE = "Все слова выучены"
 
 fun main(args: Array<String>) {
 
@@ -36,11 +36,37 @@ fun main(args: Array<String>) {
         val dataGroups = dataMatches?.groups
         val data = dataGroups?.get(1)?.value
 
-        if (receivedText.equals("hello", true)) telegramBotService.sendMessage(chatId, WELCOME_MESSAGE)
-        if (receivedText.equals(START_TEXT, true)) telegramBotService.sendMenu(chatId)
-        if (data.equals(STATISTICS_CLICK, true)) telegramBotService.sendMessage(chatId, "Learned 6 of 6 | 100%")
+        if (receivedText.equals(START_MENU, true)) telegramBotService.sendMenu(chatId)
+
+        when(data) {
+            LEARN_WORDS_CLICK -> checkNextQuestionAndSend(trainer, telegramBotService, chatId)
+            STATISTICS_CLICK -> showStatistics(trainer, telegramBotService, chatId)
+        }
     }
 
+}
+
+fun checkNextQuestionAndSend(
+    trainer: LearnWordsTrainer,
+    telegramBotService: TelegramBotService,
+    chatId: Long
+) {
+    val nextQuestion = trainer.getNextQuestion()
+    if (nextQuestion == null) {
+        telegramBotService.sendMessage(chatId, ALL_WORDS_LEARNED_MESSAGE)
+    } else {
+        telegramBotService.sendQuestion(chatId, nextQuestion)
+    }
+}
+
+fun showStatistics(
+    trainer: LearnWordsTrainer,
+    telegramBotService: TelegramBotService,
+    chatId: Long
+) {
+    val statistics = trainer.getStatistics()
+    val statisticsMessageText = "Выучено ${statistics.learnedWords} из ${statistics.wordsAmount} слов | ${statistics.learnedPercent}%\n"
+    telegramBotService.sendMessage(chatId, statisticsMessageText)
 }
 
 
