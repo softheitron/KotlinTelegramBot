@@ -38,7 +38,11 @@ fun main(args: Array<String>) {
 
         if (receivedText.equals("hello", true)) telegramBotService.sendMessage(chatId, WELCOME_MESSAGE)
         if (receivedText.equals(START_TEXT, true)) telegramBotService.sendMenu(chatId)
-        if (data.equals(STATISTICS_CLICK, true)) telegramBotService.sendMessage(chatId, "Learned 6 of 6 | 100%")
+        if (data.equals(STATISTICS_CLICK, true)) {
+            val statistics = trainer.getStatistics()
+            val statisticsMessageText = "Выучено ${statistics.learnedWords} из ${statistics.wordsAmount} слов | ${statistics.learnedPercent}%\n"
+            telegramBotService.sendMessage(chatId, statisticsMessageText)
+        }
     }
 
 }
