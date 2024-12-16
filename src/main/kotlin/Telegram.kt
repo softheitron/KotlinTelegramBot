@@ -2,6 +2,7 @@ package org.example
 
 const val START_MENU = "/start"
 const val ALL_WORDS_LEARNED_MESSAGE = "Все слова выучены"
+const val RIGHT_ANSWER_MESSAGE = "Правильно!"
 
 fun main(args: Array<String>) {
 
@@ -38,12 +39,44 @@ fun main(args: Array<String>) {
 
         if (receivedText.equals(START_MENU, true)) telegramBotService.sendMenu(chatId)
 
-        when(data) {
-            LEARN_WORDS_CLICK -> checkNextQuestionAndSend(trainer, telegramBotService, chatId)
-            STATISTICS_CLICK -> showStatistics(trainer, telegramBotService, chatId)
+        when {
+            data.equals(LEARN_WORDS_CLICK) -> checkNextQuestionAndSend(trainer, telegramBotService, chatId)
+            data.equals(STATISTICS_CLICK) -> showStatistics(trainer, telegramBotService, chatId)
+            data.equals(BACK_TO_MENU_CLICK) -> telegramBotService.sendMenu(chatId)
+            data?.startsWith(CALLBACK_DATA_ANSWER_PREFIX, true) == true -> {
+                val answerId = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toIntOrNull() ?: continue
+                val lastQuestion = trainer.getLastQuestion()
+                checkAnswerAndSendMessage(
+                    answerId,
+                    lastQuestion,
+                    trainer,
+                    telegramBotService,
+                    chatId
+                )
+            }
         }
+
     }
 
+}
+
+fun checkAnswerAndSendMessage(
+    answerId: Int,
+    lastQuestion: Question?,
+    trainer: LearnWordsTrainer,
+    telegramBotService: TelegramBotService,
+    chatId: Long
+) {
+    if (trainer.checkAnswer(answerId)) {
+        telegramBotService.sendMessage(chatId, RIGHT_ANSWER_MESSAGE)
+        checkNextQuestionAndSend(trainer, telegramBotService, chatId)
+    } else {
+        val wrongAnswerMessage = "Неправильно! " +
+                "${lastQuestion?.correctAnswer?.originalWord}" +
+                " - это ${lastQuestion?.correctAnswer?.translatedWord}"
+        telegramBotService.sendMessage(chatId, wrongAnswerMessage)
+        checkNextQuestionAndSend(trainer, telegramBotService, chatId)
+    }
 }
 
 fun checkNextQuestionAndSend(
