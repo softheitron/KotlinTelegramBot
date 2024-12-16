@@ -11,6 +11,7 @@ const val STATISTICS_CLICK = "statistics_clicked"
 const val LEARN_WORDS_CLICK = "learn_words_clicked"
 const val TELEGRAM_API_URL = "https://api.telegram.org/bot"
 const val CALLBACK_DATA_ANSWER_PREFIX = "answer_"
+const val BACK_TO_MENU_CLICK = "back_to_menu_clicked"
 
 class TelegramBotService(private val botToken: String) {
 
@@ -82,7 +83,13 @@ class TelegramBotService(private val botToken: String) {
                 "text": "${question.correctAnswer.originalWord}",
                 "reply_markup": {
                     "inline_keyboard": [
-                        $variants
+                        $variants,
+                        [
+                    {
+                        "text": "В меню",
+                        "callback_data": "$BACK_TO_MENU_CLICK"
+                    }
+                ]
                     ]
                 }
             }

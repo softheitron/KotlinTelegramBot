@@ -42,6 +42,7 @@ fun main(args: Array<String>) {
         when {
             data.equals(LEARN_WORDS_CLICK) -> checkNextQuestionAndSend(trainer, telegramBotService, chatId)
             data.equals(STATISTICS_CLICK) -> showStatistics(trainer, telegramBotService, chatId)
+            data.equals(BACK_TO_MENU_CLICK) -> telegramBotService.sendMenu(chatId)
             data?.startsWith(CALLBACK_DATA_ANSWER_PREFIX, true) == true -> {
                 val answerId = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toIntOrNull() ?: continue
                 val lastQuestion = trainer.getLastQuestion()
