@@ -22,7 +22,7 @@ data class Response(
 @Serializable
 data class Message(
     @SerialName("text")
-    val text: String,
+    val text: String? = null,
     @SerialName("chat")
     val chat: Chat,
 )
@@ -70,44 +70,49 @@ fun main(args: Array<String>) {
     val botToken = args[0]
     var lastUpdateId = 0L
     val telegramBotService = TelegramBotService(botToken)
-    val trainer = LearnWordsTrainer()
+    val trainers = HashMap<Long, LearnWordsTrainer>()
 
     while (true) {
         Thread.sleep(1000)
         val responseString = telegramBotService.getUpdates(lastUpdateId)
         println(responseString)
         val response: Response = telegramBotService.json.decodeFromString(responseString)
-        val update = response.result
-        val firstUpdate = update.firstOrNull() ?: continue
-        val updateId = firstUpdate.updateId
-        lastUpdateId = updateId + 1
-
-
-        val chatId = firstUpdate.message?.chat?.id ?: firstUpdate.callbackQuery?.message?.chat?.id
-        val receivedText = firstUpdate.message?.text
-        val data = firstUpdate.callbackQuery?.data
-
-        if (chatId != null) {
-            if (receivedText.equals(START_MENU, true)) telegramBotService.sendMenu(chatId)
-            when {
-                data.equals(LEARN_WORDS_CLICK) -> checkNextQuestionAndSend(trainer, telegramBotService, chatId)
-                data.equals(STATISTICS_CLICK) -> showStatistics(trainer, telegramBotService, chatId)
-                data.equals(BACK_TO_MENU_CLICK) -> telegramBotService.sendMenu(chatId)
-                data?.startsWith(CALLBACK_DATA_ANSWER_PREFIX, true) == true -> {
-                    val answerId = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toIntOrNull() ?: continue
-                    val lastQuestion = trainer.getLastQuestion()
-                    checkAnswerAndSendMessage(
-                        answerId,
-                        lastQuestion,
-                        trainer,
-                        telegramBotService,
-                        chatId
-                    )
-                }
-            }
-        }
+        if(response.result.isEmpty()) continue
+        val sortedUpdates = response.result.sortedBy { it.updateId }
+        sortedUpdates.forEach { handleUpdates(it, telegramBotService, trainers) }
+        lastUpdateId = sortedUpdates.last().updateId + 1
     }
 
+}
+
+fun handleUpdates(update: Update, telegramBotService: TelegramBotService, trainers: HashMap<Long, LearnWordsTrainer>) {
+
+    val chatId = update.message?.chat?.id ?: update.callbackQuery?.message?.chat?.id ?: return
+    val receivedText = update.message?.text
+    val data = update.callbackQuery?.data
+    val trainer = trainers.getOrPut(chatId) { LearnWordsTrainer("$chatId.txt") }
+
+    if (receivedText.equals(START_MENU, true)) telegramBotService.sendMenu(chatId)
+    when {
+        data.equals(LEARN_WORDS_CLICK) -> checkNextQuestionAndSend(trainer, telegramBotService, chatId)
+        data.equals(STATISTICS_CLICK) -> showStatistics(trainer, telegramBotService, chatId)
+        data.equals(BACK_TO_MENU_CLICK) -> telegramBotService.sendMenu(chatId)
+        data.equals(RESET_STATISTICS_CLICK) -> {
+            trainer.resetProgress()
+            telegramBotService.sendMessage(chatId, "Погресс сброшен!")
+        }
+        data?.startsWith(CALLBACK_DATA_ANSWER_PREFIX, true) == true -> {
+            val answerId = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toIntOrNull() ?: return
+            val lastQuestion = trainer.getLastQuestion()
+            checkAnswerAndSendMessage(
+                answerId,
+                lastQuestion,
+                trainer,
+                telegramBotService,
+                chatId
+            )
+        }
+    }
 }
 
 fun checkAnswerAndSendMessage(
@@ -152,5 +157,3 @@ fun showStatistics(
         "Выучено ${statistics.learnedWords} из ${statistics.wordsAmount} слов | ${statistics.learnedPercent}%\n"
     telegramBotService.sendMessage(chatId, statisticsMessageText)
 }
-
-
