@@ -99,7 +99,7 @@ fun handleUpdates(update: Update, telegramBotService: TelegramBotService, traine
         data.equals(BACK_TO_MENU_CLICK) -> telegramBotService.sendMenu(chatId)
         data.equals(RESET_STATISTICS_CLICK) -> {
             trainer.resetProgress()
-            telegramBotService.sendMessage(chatId, "Погресс сброшен!")
+            telegramBotService.sendMessage(chatId, RESET_STATISTICS_MESSAGE)
         }
         data?.startsWith(CALLBACK_DATA_ANSWER_PREFIX, true) == true -> {
             val answerId = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toIntOrNull() ?: return

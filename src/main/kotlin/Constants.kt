@@ -10,6 +10,7 @@ const val STATISTICS_TEXT = "Статистика"
 const val BACK_TO_MENU_TEXT = "Вернуться в меню"
 const val MAIN_MENU_TEXT = "Основное меню"
 const val RESET_STATISTICS_TEXT = "Сбросить статистику"
+const val RESET_STATISTICS_MESSAGE = "Погресс сброшен!"
 
 const val STATISTICS_CLICK = "statistics_clicked"
 const val LEARN_WORDS_CLICK = "learn_words_clicked"
