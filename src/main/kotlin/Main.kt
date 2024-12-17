@@ -1,9 +1,5 @@
 package org.example
 
-const val PERCENTAGE_HUNDRED = 100
-const val QUESTION_WORDS_AMOUNT = 4
-const val MAX_CORRECT_ANSWERS = 3
-
 fun Question.asConsoleString(): String {
     val variants = this.variants
         .mapIndexed { index, word -> "${index + 1} - ${word.translatedWord}\n" }
