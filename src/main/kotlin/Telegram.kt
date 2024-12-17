@@ -148,7 +148,8 @@ fun showStatistics(
     chatId: Long
 ) {
     val statistics = trainer.getStatistics()
-    val statisticsMessageText = "Выучено ${statistics.learnedWords} из ${statistics.wordsAmount} слов | ${statistics.learnedPercent}%\n"
+    val statisticsMessageText =
+        "Выучено ${statistics.learnedWords} из ${statistics.wordsAmount} слов | ${statistics.learnedPercent}%\n"
     telegramBotService.sendMessage(chatId, statisticsMessageText)
 }
 

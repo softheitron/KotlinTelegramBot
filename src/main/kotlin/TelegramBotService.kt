@@ -38,12 +38,14 @@ class TelegramBotService(private val botToken: String) {
 
         val requestBody = SendMessageRequest(
             chatId,
-            "Основное меню",
+            MAIN_MENU_TEXT,
             ReplyMarkup(
-                listOf(listOf(
-                    InlineKeyboard(text = LEARN_WORDS_TEXT, callbackData = LEARN_WORDS_CLICK),
-                    InlineKeyboard(text = STATISTICS_TEXT, callbackData = STATISTICS_CLICK),
-                ))
+                listOf(
+                    listOf(
+                        InlineKeyboard(text = LEARN_WORDS_TEXT, callbackData = LEARN_WORDS_CLICK)),
+                    listOf(
+                        InlineKeyboard(text = STATISTICS_TEXT, callbackData = STATISTICS_CLICK))
+                )
             )
         )
         val requestBodyString = json.encodeToString(requestBody)
@@ -57,18 +59,28 @@ class TelegramBotService(private val botToken: String) {
 
     fun sendQuestion(chatId: Long, question: Question) {
         val sendMessageUrl = "$TELEGRAM_API_URL$botToken/sendMessage"
+        val backToMenuButton = listOf(
+            listOf(
+                InlineKeyboard(
+                    text = BACK_TO_MENU_TEXT,
+                    callbackData = BACK_TO_MENU_CLICK)
+            )
+        )
 
         val requestBody = SendMessageRequest(
             chatId,
             question.correctAnswer.originalWord,
             ReplyMarkup(
-                listOf(question.variants.mapIndexed { index, word ->
-                    InlineKeyboard(
-                        text = word.translatedWord, callbackData = "$CALLBACK_DATA_ANSWER_PREFIX$index"
+                question.variants.mapIndexed { index, word ->
+                    listOf(
+                        InlineKeyboard(
+                            text = word.translatedWord,
+                            callbackData = "$CALLBACK_DATA_ANSWER_PREFIX$index"
+                        )
                     )
-                })
+                } + backToMenuButton)
             )
-        )
+
         val requestBodyString = json.encodeToString(requestBody)
 
         val sendMessageRequest = HttpRequest.newBuilder().uri(URI.create(sendMessageUrl))

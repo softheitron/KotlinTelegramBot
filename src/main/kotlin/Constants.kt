@@ -7,6 +7,8 @@ const val ALL_WORDS_LEARNED_MESSAGE = "Все слова выучены"
 const val RIGHT_ANSWER_MESSAGE = "Правильно!"
 const val LEARN_WORDS_TEXT = "Изучить слова"
 const val STATISTICS_TEXT = "Статистика"
+const val BACK_TO_MENU_TEXT = "Вернуться в меню"
+const val MAIN_MENU_TEXT = "Основное меню"
 
 const val STATISTICS_CLICK = "statistics_clicked"
 const val LEARN_WORDS_CLICK = "learn_words_clicked"
