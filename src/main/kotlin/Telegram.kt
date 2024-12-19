@@ -85,8 +85,11 @@ fun main(args: Array<String>) {
 
 }
 
-fun handleUpdates(update: Update, telegramBotService: TelegramBotService, trainers: HashMap<Long, LearnWordsTrainer>) {
-
+fun handleUpdates(
+    update: Update,
+    telegramBotService: TelegramBotService,
+    trainers: HashMap<Long, LearnWordsTrainer>
+) {
     val chatId = update.message?.chat?.id ?: update.callbackQuery?.message?.chat?.id ?: return
     val receivedText = update.message?.text
     val data = update.callbackQuery?.data
